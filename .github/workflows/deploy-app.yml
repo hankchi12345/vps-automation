@@ -1,0 +1,45 @@
+name: Deploy Monitoring Stack
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'services/monitoring/**' # This ensures the workflow only runs when files in the monitoring service are changed
+      - 'scripts/deploy-monitoring.sh'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # [keypoint] It well sync files to VPS
+      # So that your docker-compose.yml and haproxy.cfg well be updated on the remote server
+      - name: Sync Files to VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 2222 # warning！After infra setup.sh,It will change to 2222
+          source: "services/monitoring/**,scripts/deploy-monitoring.sh"
+          target: "/root/vps-automation"
+
+      - name: Execute Deploy Script
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 2222 #I  change this to 2222 
+          envs: CF_TUNNEL_TOKEN
+          script: |
+            export CF_TUNNEL_TOKEN=${{ secrets.CF_TUNNEL_TOKEN }}
+            cd /root/vps-automation
+            # run the script
+            bash ./scripts/deploy-monitoring.sh
+        env:
+          CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}

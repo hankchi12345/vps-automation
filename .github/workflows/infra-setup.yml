@@ -2,9 +2,7 @@ name: Remote server setup
 
 # targets (push)
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
 
 # job info
 jobs:
@@ -43,3 +41,19 @@ jobs:
             sudo /tmp/setup.sh
             # clean up the temporary script
             rm /tmp/setup.sh
+
+      - name: Deploy Monitoring
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          port: 22
+          key: ${{ secrets.SSH_KEY }}
+          # Here we pass the Secret to the SSH execution environment
+          envs: CF_TUNNEL_TOKEN
+          script: |
+            export CF_TUNNEL_TOKEN=${{ secrets.CF_TUNNEL_TOKEN }}
+            cd /root/vps-automation
+            # run the script
+            bash ./scripts/deploy-monitoring.sh
+        env:
+          CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}

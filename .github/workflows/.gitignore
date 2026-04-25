@@ -1,0 +1,10 @@
+# Ignore Docker storage and data directories
+storage/
+**/data/
+
+# Ignore environment variable files
+.env
+*.local
+
+# Ignore system logs
+*.log
