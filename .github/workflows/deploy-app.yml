@@ -2,11 +2,12 @@ name: Deploy Monitoring Stack
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'services/monitoring/**' # This ensures the workflow only runs when files in the monitoring service are changed
       - 'scripts/deploy-monitoring.sh'
+
+  workflow_dispatch:
 
 jobs:
   deploy:

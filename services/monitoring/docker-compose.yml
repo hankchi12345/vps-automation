@@ -1,0 +1,48 @@
+services:
+  haproxy:
+    image: haproxy:2.8-alpine3.23
+    container_name: haproxy
+    ports:
+      - "80:80"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - monitor-net
+    restart: always
+
+  prometheus:
+    image: prom/prometheus:v3.11.2
+    container_name: prometheus
+    user: "65534:65534" # 確保權限正確
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../../storage/prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - monitor-net
+    restart: always
+
+  grafana:
+    image: grafana/grafana-oss:13.0.1-alpine # 推薦補上 -alpine 節省空間
+    container_name: grafana
+    volumes:
+      - ../../storage/grafana-data:/var/lib/grafana
+    networks:
+      - monitor-net
+    restart: always
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    environment:
+      - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN} # Form GitHub Secrets 
+    command: tunnel --no-autoupdate run
+    networks:
+      - monitor-net
+    restart: always
+
+networks:
+  monitor-net:
+    driver: bridge
