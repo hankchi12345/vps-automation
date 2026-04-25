@@ -1,0 +1,45 @@
+name: Remote server setup
+
+# targets (push)
+on:
+  push:
+    branches:
+      - main
+
+# job info
+jobs:
+  # use github VM
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    
+    # download code in to github VM 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # transport setup script to my VPS using SCP
+      - name: Copy script via SCP
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          source: "setup.sh" # transport the setup.sh script to the remote server
+          target: "/tmp"     # transport it to the /tmp directory on the remote server
+
+      # setup SSH agent and deploy to remote server
+      - name: Set up SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22  # My script will change port to 2222 but this is the default SSH port
+          script: |
+            echo "Successfully connected to remote VPS."
+            # give execute permission to the setup script and run it
+            chmod +x /tmp/setup.sh
+            sudo /tmp/setup.sh
+            # clean up the temporary script
+            rm /tmp/setup.sh
