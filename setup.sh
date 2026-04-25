@@ -36,17 +36,20 @@ dnf install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 # Install Cloudflared (Tunnel Engine)
 dnf install -y https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-x86_64.rpm
 
-# --- 4. SSH Hardening ---
-echo "Hardening SSH configuration (Port $SSH_PORT, Key-only Auth)..."
-cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+# Step 4a: Install SELinux management tools (Required for semanage)
+echo "Installing SELinux management tools..."
+dnf install -y policycoreutils-python-utils
 
-# Modify SSH Port (Regex handles commented and existing values)
+# Step 4b: Update SELinux policy for the new SSH port
+# We use || to ensure that if the port is already added, the script won't stop
+echo "Updating SELinux policy for Port $SSH_PORT..."
+semanage port -a -t ssh_port_t -p tcp $SSH_PORT || semanage port -m -t ssh_port_t -p tcp $SSH_PORT
+
+# Step 4c: Modify SSH configuration files
 sed -i -E "s/^#?Port [0-9]+/Port $SSH_PORT/" /etc/ssh/sshd_config
-
-# Disable Password Authentication
 sed -i -E "s/^#?PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
 
-# Validate SSH config and restart service
+# Step 4d: Validate SSH config and restart service
 sshd -t && systemctl restart sshd
 
 # --- 5. Firewall Configuration ---
