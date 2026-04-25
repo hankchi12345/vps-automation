@@ -23,7 +23,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "setup.sh" # transport the setup.sh script to the remote server
+          source: "scripts/setup.sh" # transport the setup.sh script to the remote server
           target: "/tmp"     # transport it to the /tmp directory on the remote server
 
       # setup SSH agent and deploy to remote server
@@ -37,10 +37,10 @@ jobs:
           script: |
             echo "Successfully connected to remote VPS."
             # give execute permission to the setup script and run it
-            chmod +x /tmp/setup.sh
-            sudo /tmp/setup.sh
+            chmod +x /tmp/scripts/setup.sh
+            sudo /tmp/scripts/setup.sh
             # clean up the temporary script
-            rm /tmp/setup.sh
+            rm /tmp/scripts/setup.sh
 
       - name: Deploy Monitoring
         uses: appleboy/ssh-action@v1.0.3
