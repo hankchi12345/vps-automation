@@ -48,7 +48,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22  # My script will change port to 2222 but this is the default SSH port
+          port: 2222  # My script will change port to 2222 
           # Here we pass the Secret to the SSH execution environment
           envs: CF_TUNNEL_TOKEN
           script: |
