@@ -41,6 +41,19 @@ jobs:
             sudo /tmp/scripts/setup.sh
             # clean up the temporary script
             rm /tmp/scripts/setup.sh
+      
+      - name: Wait for SSH Port 2222 to be ready
+        run: |
+          for i in {1..5}; do
+            if nc -zv ${{ secrets.HOST }} 2222; then
+              echo " SSH Port 2222 is OPEN!"
+              exit 0
+            fi
+            echo " Port 2222 is still closed, retrying in 3s... ($i/5)"
+            sleep 3
+          done
+          echo " Error: SSH Port 2222 timed out after 5 attempts."
+          exit 1 # IF fail to connect 5 times, exit with error
 
       - name: Deploy Monitoring
         uses: appleboy/ssh-action@v1.0.3
