@@ -40,7 +40,7 @@ jobs:
             chmod +x /root/vps-automation/scripts/setup.sh
             sudo /root/vps-automation/scripts/setup.sh
             # clean up the temporary script
-            rm /root/vps-automation/scripts/setup.sh
+            mv /root/vps-automation/scripts/setup.sh /root/vps-automation/scripts/DONTUSE
       
       - name: Wait for SSH Port 2222 to be ready
         run: |
