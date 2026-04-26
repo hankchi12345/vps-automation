@@ -25,7 +25,7 @@ services:
     restart: always
 
   grafana:
-    image: grafana/grafana-oss:13.0.1-alpine # 推薦補上 -alpine 節省空間
+    image: grafana/grafana-oss:13.0.1 
     container_name: grafana
     volumes:
       - ../../storage/grafana-data:/var/lib/grafana
