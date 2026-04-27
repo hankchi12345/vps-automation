@@ -63,10 +63,12 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 2222  # My script will change port to 2222 
           # Here we pass the Secret to the SSH execution environment
-          envs: CF_TUNNEL_TOKEN
+          envs: CF_TUNNEL_TOKEN,GRAFANA_ADMIN_PASSWORD,GRAFANA_ADMIN_USER
           script: |
             cd /root/vps-automation
             # run the script
             bash ./scripts/deploy-monitoring.sh
         env:
           CF_TUNNEL_TOKEN: ${{ secrets.CF_TUNNEL_TOKEN }}
+          GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+          GRAFANA_ADMIN_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
