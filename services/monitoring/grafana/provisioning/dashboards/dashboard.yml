@@ -1,7 +1,9 @@
 apiVersion: 1
 providers:
   - name: 'Standard Dashboards'
-    folder: 'General'
+    folder: 'Infrastructure'
     type: file
+    disableDeletion: true
     options:
       path: /var/lib/grafana/dashboards # how the container mount the dashboard folder in docker-compose.yml
+      foldersFromFilesStructure: true # This will create subfolders in Grafana according to the file structure in the mounted path
