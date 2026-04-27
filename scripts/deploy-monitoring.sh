@@ -8,6 +8,10 @@ mkdir -p storage/prometheus-data storage/grafana-data
 chown -R 65534:65534 storage/prometheus-data
 chown -R 472:472 storage/grafana-data
 
+#change permissions to 755 so that the container can read/write to these directories without issues.
+chmod -R 755 storage/prometheus-data
+chmod -R 755 storage/grafana-data
+
 # 2. Just docker compose 
 cd services/monitoring
 docker compose pull

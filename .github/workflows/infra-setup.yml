@@ -15,8 +15,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # transport setup script to my VPS using SCP
-      - name: Copy script via SCP
+      # Sync files to remote server 
+      - name: Sync Files to VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
