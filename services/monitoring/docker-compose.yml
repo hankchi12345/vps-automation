@@ -35,8 +35,15 @@ services:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
+      #most of sys metrics are not relevant to container monitoring, so we exclude them to avoid permission issues and reduce noise
       - /var/lib/docker/:/var/lib/docker:ro
-    networks:
+      - /dev/disk/:/dev/disk:ro
+      #floder for cadvisor's own metrics storage
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - '--docker_only=true'
+      - '--housekeeping_interval=15s' # default is 1m, we change it to 15s to align with Prometheus scrape interval
+      - '--allow_dynamic_housekeeping=true' # enable this to allow cadvisor to adjust housekeeping interval dynamically based on the number of containers, which can help reduce resource usage on busy hosts
       - monitor-net    
 
   prometheus:
