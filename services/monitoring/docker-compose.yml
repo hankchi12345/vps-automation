@@ -26,11 +26,16 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     networks:
       - monitor-net
+
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.51.0
+    image: gcr.io/cadvisor/cadvisor:v0.49.2
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
+    security_opt:
+      - label:disable
+    devices:
+      - /dev/kmsg  
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
@@ -43,8 +48,9 @@ services:
     command:
       - '--docker_only=true'
       - '--housekeeping_interval=15s' # default is 1m, we change it to 15s to align with Prometheus scrape interval
-      - '--allow_dynamic_housekeeping=true' # enable this to allow cadvisor to adjust housekeeping interval dynamically based on the number of containers, which can help reduce resource usage on busy hosts
-      - monitor-net    
+      - '--raw_cgroup_prefix_whitelist=/docker'
+    networks:
+      - monitor-net
 
   prometheus:
     image: prom/prometheus:v3.11.2
