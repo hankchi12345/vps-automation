@@ -28,7 +28,7 @@ services:
       - monitor-net
 
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.2
+    image: gcr.io/cadvisor/cadvisor:v0.47.2
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
@@ -45,10 +45,10 @@ services:
       - /dev/disk/:/dev/disk:ro
       #floder for cadvisor's own metrics storage
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
     command:
       - '--docker_only=true'
       - '--housekeeping_interval=15s' # default is 1m, we change it to 15s to align with Prometheus scrape interval
-      - '--raw_cgroup_prefix_whitelist=/docker'
     networks:
       - monitor-net
 
@@ -89,7 +89,7 @@ services:
     container_name: cloudflared
     environment:
       - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN} # Form GitHub Secrets 
-    command: tunnel --protocol http2 --no-autoupdate run
+    command: tunnel run --protocol http2 --no-autoupdate 
       - monitor-net
     restart: always
 
