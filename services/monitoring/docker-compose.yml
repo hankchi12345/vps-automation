@@ -51,9 +51,6 @@ services:
       - '--housekeeping_interval=15s'
       - '--docker_root=/var/lib/docker'
       - '--disable_metrics=percpu,sched,tcp,disk,diskIO,hugetlb'
-      - '--enable_metrics=container_label'
-      - '--container_labels=true'
-      - '--docker_env_metadata_label=true'
     networks:
       - monitor-net
 
