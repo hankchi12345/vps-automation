@@ -50,7 +50,7 @@ services:
       - '--docker_only=true'
       - '--housekeeping_interval=15s'
       - '--docker_root=/var/lib/docker'
-      - '--raw_cgroup_prefix_whitelist=/system.slice'
+      - '--storage_driver=overlay2' # specify the storage driver to avoid issues with certain setups
       - '--allow_dynamic_housekeeping=true'
       - '--disable_metrics=percpu,sched,tcp,disk,diskIO,hugetlb'
     networks:
