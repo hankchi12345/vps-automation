@@ -89,8 +89,7 @@ services:
     container_name: cloudflared
     environment:
       - TUNNEL_TOKEN=${CF_TUNNEL_TOKEN} # Form GitHub Secrets 
-    command: tunnel --no-autoupdate run
-    networks:
+    command: tunnel --protocol http2 --no-autoupdate run
       - monitor-net
     restart: always
 
