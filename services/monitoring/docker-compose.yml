@@ -27,32 +27,28 @@ services:
     networks:
       - monitor-net
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.47.2
+    cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
     security_opt:
       - label:disable
     devices:
-      - /dev/kmsg  
+      - /dev/kmsg
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:rw
       - /sys:/sys:ro
-      #most of sys metrics are not relevant to container monitoring, so we exclude them to avoid permission issues and reduce noise
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
-      #folder for cadvisor's own metrics storage
-      - /var/run/docker.sock:/var/run/docker.sock:rw
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
+      - /run/docker.sock:/var/run/docker.sock:rw
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+      - /dev/cgroup:/dev/cgroup:rw
     command:
       - '--docker_only=true'
       - '--housekeeping_interval=15s'
-      - '--docker_root=/var/lib/docker'
-      - '--storage_driver=overlay2' # specify the storage driver to avoid issues with certain setups
-      - '--allow_dynamic_housekeeping=true'
-      - '--disable_metrics=percpu,sched,tcp,disk,diskIO,hugetlb'
+      - '--port=8080'
     networks:
       - monitor-net
 
