@@ -27,7 +27,7 @@ services:
     networks:
       - monitor-net
 
-    cadvisor:
+  cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.2
     container_name: cadvisor
     restart: unless-stopped
@@ -45,10 +45,13 @@ services:
       - /run/docker.sock:/var/run/docker.sock:rw
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
       - /dev/cgroup:/dev/cgroup:rw
+      - /proc:/host/proc:ro
     command:
-      - '--docker_only=true'
+      - '--docker_only=false'
+      - '--allow_dynamic_housekeeping=true'
       - '--housekeeping_interval=15s'
       - '--port=8080'
+      - '--disable_metrics=accelerator,cpu_topology,resctrl'
     networks:
       - monitor-net
 
